@@ -36,7 +36,7 @@ Specify fraction of stubs to kill in the region you've specified i.e. 1 = kill a
       bool kill = killStub( p_ttstub, 
         trackerTopology, 
         trackerGeometry, 
-        11,
+        5,
         0,
         TMath::PiOver2(),
         -1000,
