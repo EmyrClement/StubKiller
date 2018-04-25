@@ -1,10 +1,3 @@
-// #include "DataFormats/L1TrackTrigger/interface/TTTypes.h"
-// #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
-// #include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
-// #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
-// #include "Geometry/CommonTopologies/interface/PixelTopology.h"
-// #include "TRandom.h"
-// #include "TMath.h"
 #include "StubKiller.h"
 using namespace std;
 
@@ -29,7 +22,7 @@ void StubKiller::initialise(unsigned int killScenario, const TrackerTopology* tr
 {
 	killScenario_ = killScenario;
 	trackerTopology_ = trackerTopology;
-	trackerGeometry = trackerGeometry_;
+	trackerGeometry_ = trackerGeometry;
 
 	if ( killScenario_ == 1 ) {
 		layersToKill_ = {5};
@@ -42,12 +35,43 @@ void StubKiller::initialise(unsigned int killScenario, const TrackerTopology* tr
 		fractionToKillInLayers_ = 1;
 		fractionToKillEverywhere_ = 0.05;
 	}
-
-
+	else if ( killScenario_ == 2 ) {
+		layersToKill_ = {1};
+		minPhiToKill_ = 0;
+		maxPhiToKill_ = TMath::PiOver2();
+		minZToKill_ = -1000;
+		maxZToKill_ = 0;
+		minRToKill_ = 0;
+		maxRToKill_ = 1000;
+		fractionToKillInLayers_ = 1;
+		fractionToKillEverywhere_ = 0.05;
+	}
+	else if ( killScenario_ == 3 ) {
+		layersToKill_ = {1, 2};
+		minPhiToKill_ = 0;
+		maxPhiToKill_ = TMath::PiOver2();
+		minZToKill_ = -1000;
+		maxZToKill_ = 0;
+		minRToKill_ = 0;
+		maxRToKill_ = 1000;
+		fractionToKillInLayers_ = 1;
+		fractionToKillEverywhere_ = 0.05;
+	}
+	else if ( killScenario_ == 4 ) {
+		layersToKill_ = {1, 11};
+		minPhiToKill_ = 0;
+		maxPhiToKill_ = TMath::PiOver2();
+		minZToKill_ = -1000;
+		maxZToKill_ = 0;
+		minRToKill_ = 0;
+		maxRToKill_ = 66.5;
+		fractionToKillInLayers_ = 1;
+		fractionToKillEverywhere_ = 0.05;
+	}
 }
 
 bool StubKiller::killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub ) {
-	if ( killScenario_ ) return false;
+	if ( killScenario_ == 0 ) return false;
 	else return killStub( stub, layersToKill_, minPhiToKill_, maxPhiToKill_,
 			minZToKill_, maxZToKill_, minRToKill_, maxRToKill_,
 			fractionToKillInLayers_, fractionToKillEverywhere_ );
@@ -95,15 +119,25 @@ bool StubKiller::killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub,
 			LocalPoint clustlp   = topol->localPosition(measurementPoint);
 			GlobalPoint pos  =  theGeomDet->surface().toGlobal(clustlp);
 
-			if ( pos.phi() > minPhiToKill && pos.phi() < maxPhiToKill &&
+			// Just in case phi is outside of -pi -> pi
+			double stubPhi = pos.phi();
+			if ( stubPhi < -1.0 * TMath::Pi() ) stubPhi += 2.0 * TMath::Pi();
+			else if ( stubPhi > TMath::Pi() ) stubPhi -= 2.0 * TMath::Pi();
+
+			if ( stubPhi > minPhiToKill && stubPhi < maxPhiToKill &&
 				pos.z() > minZToKill && pos.z() < maxZToKill &&
 				pos.perp() > minRToKill && pos.perp() < maxRToKill ) {
 
 				// Kill fraction of stubs
-				static TRandom randomGenerator;
-				double randomNumber = randomGenerator.Rndm();
-				if ( randomGenerator.Rndm() < fractionToKillInLayers ) {
+				if ( fractionToKillInLayers == 1 ) {
 					return true;
+				}
+				else {
+					static TRandom randomGenerator;
+					double randomNumber = randomGenerator.Rndm();
+					if ( randomGenerator.Rndm() < fractionToKillInLayers ) {
+						return true;
+					}					
 				}
 			}
 		}
