@@ -21,11 +21,11 @@ You must then call the initialise method once you have access to the TrackerTopo
 
 The "killScenario" options are :
 
-0 : kill nothing
-1 : kill one quadrant (-pi to 0) of layer 5, and 5% of stubs throughout tracker
-2 : kill one quadrant (-pi to 0) of layer 1, and 5% of stubs throughout tracker
-3 : kill one quadrant (-pi to 0) of layers 1 & 2, and 5% of stubs throughout tracker
-4 : kill one quadrant (-pi to 0) of layer 1 & disk 1, and 5% of stubs throughout tracker
+* 0 : kill nothing
+* 1 : kill one quadrant (-pi to 0) of layer 5, and 5% of stubs throughout tracker
+* 2 : kill one quadrant (-pi to 0) of layer 1, and 5% of stubs throughout tracker
+* 3 : kill one quadrant (-pi to 0) of layers 1 & 2, and 5% of stubs throughout tracker
+* 4 : kill one quadrant (-pi to 0) of layer 1 & disk 1, and 5% of stubs throughout tracker
 
 
 To determine whether a stub should be killed, you can call the killStub method:
