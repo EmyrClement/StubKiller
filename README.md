@@ -4,58 +4,51 @@
 git clone git@github.com:EmyrClement/StubKiller.git
 
 ## Description
-A function to flag (i.e. returns a bool) whether a stub should be killed.
+A class which can be used to decide whether a stub should be killed.  The functions in the class return a bool, which you can then use to remove stubs i.e. the class does not actually kill the stubs, it just flags those that should be killed.
 
+### Example usage
+The constructor for the class doesn't take any arguments:
 ```
-bool killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub,
-		const TrackerTopology* trackerTopology, 
-		const TrackerGeometry* trackerGeometry, 
-		const int layerToKill,
-		const int minPhiToKill,
-		const int maxPhiToKill,
-		const int minZToKill,
-		const int maxZToKill,
-		const double fractionToKill = 1
-	)
+  StubKiller();
 ```
 
-In addition to passing the CMSSW objects (the TTStub you are considering, and the TrackerTopology and TrackerGeometry), you also need to specify the following arguments:
-* layerToKill
-Which layer to kill stubs in.  If set to -1, then all stubs are considered regardless of which layer they are in.  Otherwise the layer numbering was chosen to match that used in TMTT:
- * 1-6 for the barrel layers
- * 11-15 for -z endcap
- * 21-25 for +z endcap
-* minPhiToKill etc.
-Specify the region in phi and z, either in layer specified by layerToKill or all layers, to kill stubs.
-* fractionToKill
-Specify fraction of stubs to kill in the region you've specified i.e. 1 = kill all stubs, 0.05 = kill 5% of stubs.  The default is to kill all stubs in the specified region.
+You must then call the initialise method once you have access to the TrackerTopology and TrackerGeometry objects in your CMSSW code.  This will also set the "kill scenario" you are considering:
 
-## Examples
-* Kill all stubs in one quadrant of layer 5
 ```
-      bool kill = killStub( p_ttstub, 
-        trackerTopology, 
-        trackerGeometry, 
-        5,
-        0,
-        TMath::PiOver2(),
-        -1000,
-        0,
-        1
-         );
+  void initialise( unsigned int killScenario, const TrackerTopology* trackerTopology, const TrackerGeometry* trackerGeometry );
+
 ```
 
-* Kill 5% of stubs in all layers
+The "killScenario" options are :
+
+0 : kill nothing
+1 : kill one quadrant (-pi to 0) of layer 5, and 5% of stubs throughout tracker
+2 : kill one quadrant (-pi to 0) of layer 1, and 5% of stubs throughout tracker
+3 : kill one quadrant (-pi to 0) of layers 1 & 2, and 5% of stubs throughout tracker
+4 : kill one quadrant (-pi to 0) of layer 1 & disk 1, and 5% of stubs throughout tracker
+
+
+To determine whether a stub should be killed, you can call the killStub method:
+
 ```
-      bool kill = killStub( p_ttstub, 
-        trackerTopology, 
-        trackerGeometry, 
-        -1,
-        -1.0 * TMath::Pi(),
-        TMath::Pi(),
-        -1000,
-        1000,
-        0.05
-         );
+bool killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub );
 ```
-Note : you could also set minPhiToKill and maxPhiToKill etc. to large dummy values like -100 and 100 just to be "safe"
+
+
+### Expert usage
+
+There is also a more complicated killStub function, which you can use to test scenarios not possible with those listed above:
+```
+bool killStub(
+        const TTStub<Ref_Phase2TrackerDigi_>* stub,
+        const vector<int> layersToKill,
+        const int minPhiToKill,
+        const int maxPhiToKill,
+        const int minZToKill,
+        const int maxZToKill,
+        const int minRToKill,
+        const int maxRToKill,
+        const double fractionToKillInLayers,
+        const double fractionToKillEverywhere
+    );
+```
