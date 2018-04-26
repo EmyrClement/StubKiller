@@ -13,7 +13,8 @@ StubKiller::StubKiller() :
 	minRToKill_(0),
 	maxRToKill_(0),
 	fractionToKillInLayers_(0),
-	fractionToKillEverywhere_(0)
+	fractionToKillEverywhere_(0),
+	fractionOfModulesToKillEverywhere_(0)
 {
 
 }
@@ -68,13 +69,39 @@ void StubKiller::initialise(unsigned int killScenario, const TrackerTopology* tr
 		fractionToKillInLayers_ = 1;
 		fractionToKillEverywhere_ = 0.05;
 	}
+	else if ( killScenario_ == 5 ) {
+		layersToKill_ = {};
+		fractionToKillInLayers_ = 0;
+		fractionToKillEverywhere_ = 0.;
+		fractionOfModulesToKillEverywhere_ = 0.1;
+	}
+
+	if ( fractionOfModulesToKillEverywhere_ > 0 ) {
+		this->chooseModulesToKill();
+	}
+}
+
+void StubKiller::chooseModulesToKill() {
+	deadModules_.clear();
+	TRandom randomGenerator;
+	unsigned int nModules = 0;
+	for (const GeomDetUnit* gd : trackerGeometry_->detUnits()) {
+		++nModules;
+		if ( randomGenerator.Rndm() < fractionOfModulesToKillEverywhere_ ) {
+			deadModules_.push_back( gd->geographicalId() );
+		}
+	}
 }
 
 bool StubKiller::killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub ) {
 	if ( killScenario_ == 0 ) return false;
-	else return killStub( stub, layersToKill_, minPhiToKill_, maxPhiToKill_,
-			minZToKill_, maxZToKill_, minRToKill_, maxRToKill_,
-			fractionToKillInLayers_, fractionToKillEverywhere_ );
+	else {
+		bool killStubRandomly = killStub( stub, layersToKill_, minPhiToKill_, maxPhiToKill_,
+						minZToKill_, maxZToKill_, minRToKill_, maxRToKill_,
+						fractionToKillInLayers_, fractionToKillEverywhere_ );
+		bool killStubInDeadModules = killStubInDeadModule( stub );
+		return killStubRandomly || killStubInDeadModules;
+	}
 }
 
 // layersToKill - a vector stating the layers we are killing stubs in.  Can be an empty vector.
@@ -150,6 +177,16 @@ bool StubKiller::killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub,
 		if ( randomGenerator.Rndm() < fractionToKillEverywhere ) {
 			return true;
 		}
+	}
+
+	return false;
+}
+
+bool StubKiller::killStubInDeadModule( const TTStub<Ref_Phase2TrackerDigi_>* stub ) {
+	if ( deadModules_.size() > 0 ) {
+		DetId stackDetid = stub->getDetId();
+		DetId geoDetId(stackDetid.rawId() + 1);
+		if ( find(deadModules_.begin(), deadModules_.end(), geoDetId ) != deadModules_.end() ) return true;	
 	}
 
 	return false;

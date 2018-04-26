@@ -35,7 +35,13 @@ public:
 
   bool killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub );
 
+  bool killStubInDeadModule( const TTStub<Ref_Phase2TrackerDigi_>* stub );
+
+  vector<DetId> getListOfDeadModules() { return deadModules_ ;}
+
 private:
+	void chooseModulesToKill();
+
 	unsigned int killScenario_;
 	const TrackerTopology* trackerTopology_;
 	const TrackerGeometry* trackerGeometry_;
@@ -49,6 +55,9 @@ private:
 	int maxRToKill_;
 	double fractionToKillInLayers_;
 	double fractionToKillEverywhere_;
+	double fractionOfModulesToKillEverywhere_;
+
+	vector<DetId> deadModules_;
 };
 
 #endif
