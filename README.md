@@ -26,6 +26,7 @@ The "killScenario" options are :
 * 2 : kill one quadrant (-pi to 0) of layer 1, and 5% of stubs throughout tracker
 * 3 : kill one quadrant (-pi to 0) of layers 1 & 2, and 5% of stubs throughout tracker
 * 4 : kill one quadrant (-pi to 0) of layer 1 & disk 1, and 5% of stubs throughout tracker
+* 5 : kill 10% of modules throughout tracker.  The same modules are dead in each event.
 
 
 To determine whether a stub should be killed, you can call the killStub method:
@@ -34,6 +35,11 @@ To determine whether a stub should be killed, you can call the killStub method:
 bool killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub );
 ```
 
+For scenarios where the same tracker modules are dead in evert event, you can access the DetId of the dead modules with:
+
+```
+vector<DetId> getListOfDeadModules()
+```
 
 ### Expert usage
 
