@@ -161,7 +161,6 @@ bool StubKiller::killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub,
 				}
 				else {
 					static TRandom randomGenerator;
-					double randomNumber = randomGenerator.Rndm();
 					if ( randomGenerator.Rndm() < fractionToKillInLayers ) {
 						return true;
 					}					
@@ -173,7 +172,6 @@ bool StubKiller::killStub( const TTStub<Ref_Phase2TrackerDigi_>* stub,
 	// Kill fraction of stubs throughout tracker
 	if ( fractionToKillEverywhere > 0 ) {
 		static TRandom randomGenerator;
-		double randomNumber = randomGenerator.Rndm();
 		if ( randomGenerator.Rndm() < fractionToKillEverywhere ) {
 			return true;
 		}
