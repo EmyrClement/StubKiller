@@ -22,12 +22,15 @@ You must then call the initialise method once you have access to the TrackerTopo
 The "killScenario" options are :
 
 * 0 : kill nothing
-* 1 : kill one quadrant (-pi to 0) of layer 5, and 5% of stubs throughout tracker
-* 2 : kill one quadrant (-pi to 0) of layer 1, and 5% of stubs throughout tracker
-* 3 : kill one quadrant (-pi to 0) of layers 1 & 2, and 5% of stubs throughout tracker
-* 4 : kill one quadrant (-pi to 0) of layer 1 & disk 1, and 5% of stubs throughout tracker
-* 5 : kill 10% of modules throughout tracker.  The same modules are dead in each event.
+* 1 : kill layer 5 in one quadrant (-pi to 0) +5% random module loss 
+* 2 : kill layer 1 in one quadrant (-pi to 0) +5% random module loss
+* 3 : kill layer 1 + layer 2, both in same quadrant
+* 4 : kill layer 1 and disk 1, both in same quadrant
+* 5 : 5% random module loss.
 
+Note : scenarios 1-4 correspond to those listed on slide 12 of https://indico.cern.ch/event/719985/contributions/2970687/attachments/1634587/2607365/StressTestTF-Acosta-Apr18.pdf
+
+Note : "5% random module loss" means that 5% of modules are chosen at the start of the CMSSW job, and the same modules remain dead in each event
 
 To determine whether a stub should be killed, you can call the killStub method:
 
@@ -54,7 +57,8 @@ bool killStub(
         const int maxZToKill,
         const int minRToKill,
         const int maxRToKill,
-        const double fractionToKillInLayers,
-        const double fractionToKillEverywhere
+        const double fractionOfStubsToKillInLayers,
+        const double fractionOfStubsToKillEverywhere
     );
 ```
+e.g. you can kill X% of stubs throughout the tracker randomly in each event, or kill X% of stubs in one quadrant randomly etc.
