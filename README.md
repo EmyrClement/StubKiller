@@ -22,8 +22,8 @@ You must then call the initialise method once you have access to the TrackerTopo
 The "killScenario" options are :
 
 * 0 : kill nothing
-* 1 : kill layer 5 in one quadrant (-pi to 0) +5% random module loss 
-* 2 : kill layer 1 in one quadrant (-pi to 0) +5% random module loss
+* 1 : kill layer 5 in one quadrant (-pi/2 to 0 in phi, and negative z) +5% random module loss 
+* 2 : kill layer 1 in one quadrant (-pi/2 to 0 in phi, and negative z) +5% random module loss
 * 3 : kill layer 1 + layer 2, both in same quadrant
 * 4 : kill layer 1 and disk 1, both in same quadrant
 * 5 : 5% random module loss.
